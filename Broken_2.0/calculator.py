@@ -44,18 +44,89 @@ except ImportError:
     USB_AVAILABLE = False
     print("[WARNING] USB interface not available - PC connectivity disabled")
 
-"""Compatibility wrapper for `firmware.calculator`.
+# ================= CONFIGURATION & CONSTANTS =================
+class Config:
+    """Centralized configuration management"""
+    
+    # Hardware Configuration
+    class Hardware:
+        # Display SPI Configuration
+        SPI_BAUDRATE_DISPLAY = 32_000_000  # 32MHz for display (fast)
+        SPI_BAUDRATE_SD = 2_000_000        # 2MHz for SD card (safe)
+        SPI_BUS = 1
+        
+        # Pin Assignments
+        SPI_SCK = 10
+        SPI_MOSI = 11
+        SPI_MISO = 12
+        DISPLAY_CS = 13
+        DISPLAY_DC = 15
+        DISPLAY_RST = 14
+        SD_CS = 17
+        BACKLIGHT_PWM = 28
+        BATTERY_ADC = 26
+        
+        # Keypad Configuration
+        KEYPAD_COLS = [2, 3, 4, 5]
+        KEYPAD_ROWS = [6, 7, 8, 9, 21, 27]
+        DEBOUNCE_MS = 40
+        LONG_PRESS_MS = 600
+        SCAN_SETTLE_US = 5
+        
+        # Display Specifications
+        DISPLAY_WIDTH = 320
+        DISPLAY_HEIGHT = 240
+        COLOR_DEPTH = 16  # RGB565
+        
+    class System:
+        # System Configuration
+        MAX_EXPRESSION_LENGTH = 128
+        EVAL_TIMEOUT_MS = 1000
+        MEMORY_GC_INTERVAL = 50
+        SLEEP_TIMEOUT_MS = 300000  # 5 minutes
+        SD_MOUNT_PATH = "/sd"
+        RESULTS_FILE = "calculations.txt"
+        GRAPH_HISTORY_FILE = "graphs.txt"
+        
+    class UI:
+        # UI Colors (RGB565)
+        BACKGROUND = 0x0000      # Black
+        FOREGROUND = 0xFFFF      # White
+        ACCENT = 0x07FF          # Cyan
+        SUCCESS = 0x07E0         # Green
+        WARNING = 0xFD20         # Orange
+        INFO = 0x001F            # Blue
+        LEGEND_BG = 0x2104       # Dark grey
+        
+        # UI Layout
+        TEXT_MARGIN = 10
+        MENU_ITEM_HEIGHT = 25
+        BATTERY_WIDTH = 70
+        BATTERY_HEIGHT = 30
+        BLINK_INTERVAL_MS = 500
 
-This wrapper re-exports the implementation from
-`Calculator.modes.basic.calculator`. It preserves the original import
-path while allowing the real implementation to live under `modes/basic`.
-"""
+# Global config instance
+config = Config()
 
-from Calculator.modes.basic.calculator import *  # noqa: F401,F403
+# Custom exceptions
+class HardwareError(Exception):
+    """Hardware-related errors"""
+    pass
 
-__all__ = [
-    name for name in dir() if not name.startswith("_")
-]
+# Helper functions
+def constrain(value, min_value, max_value):
+    """Constrain value within range"""
+    return max(min_value, min(max_value, value))
+
+# ================= LOGGING SYSTEM =================
+class Logger:
+    """Simple logging system for debugging and monitoring"""
+    
+    def __init__(self, debug_enabled: bool = True):
+        self.debug_enabled = debug_enabled
+        self.operation_count = 0
+        
+    def debug(self, message: str):
         if self.debug_enabled:
             print(f"[DEBUG] {message}")
             
@@ -211,11 +282,11 @@ class DisplayManager:
         self.spi_manager.switch_to_display()
         spi = self.spi_manager.get_spi()
         
-    # Send command
-    self.dc.value(0)
-    self.cs.value(0)
-    spi.write(bytes([cmd]))
-    self.cs.value(1)
+        # Send command
+        self.dc.value(0)
+        self.cs.value(0)
+        spi.write(bytes([cmd]))
+        self.cs.value(1)
         
         # Send data if provided
         if data:
@@ -226,9 +297,9 @@ class DisplayManager:
             
     def _set_window(self, x0: int, y0: int, x1: int, y1: int):
         """Set drawing window"""
-    self._send_command(0x2A, bytes([x0>>8, x0&255, x1>>8, x1&255]))
-    self._send_command(0x2B, bytes([y0>>8, y0&255, y1>>8, y1&255]))
-    self._send_command(0x2C)
+        self._send_command(0x2A, bytes([x0>>8, x0&255, x1>>8, x1&255]))
+        self._send_command(0x2B, bytes([y0>>8, y0&255, y1>>8, y1&255]))
+        self._send_command(0x2C)
         
     def clear(self, color: int = None):
         """Clear display with color"""
