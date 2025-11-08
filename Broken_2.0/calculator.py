@@ -26,6 +26,7 @@ import framebuf, time, utime, math, os, gc
 import sdcard
 from typing import Optional, Dict, List, Any, Tuple
 import json
+from core import AppState
 
 # Import game modules (ensure they exist)
 try:
@@ -49,6 +50,9 @@ from hardware import SPIManager, DisplayManager, KeypadManager, PowerManager
 
 # Import math engine module
 from math.secure_engine import SecureMathEngine
+
+# Enhanced math engine is imported directly, so it's always available
+ENHANCED_MATH_AVAILABLE = True
 
 # ================= CONFIGURATION & CONSTANTS =================
 class Config:
@@ -483,66 +487,6 @@ class UIManager:
             for i, line in enumerate(lines[:2]):  # Max 2 lines
                 self.display.draw_text(msg_x, msg_y + i * 12, line, config.UI.FOREGROUND)
 
-# ================= APPLICATION STATE MANAGEMENT =================
-class AppState:
-    """Application state manager"""
-    
-    def __init__(self):
-        # Calculator state
-        self.current_expression = ""
-        self.last_result = ""
-        self.shift_mode = False
-        
-        # UI state
-        self.current_mode = "calc"  # calc, menu, files, settings, graph, viewer
-        self.menu_index = 0
-        self.settings_index = 0
-        
-        # File browser state
-        self.file_list = []
-        self.file_index = 0
-        self.viewer_file = None
-        self.viewer_scroll = 0
-        
-        # Graph state
-        self.graph_expression = "sin(x)"
-        self.graph_x_min = -10.0
-        self.graph_y_min = -5.0
-        self.graph_x_range = 20.0
-        self.graph_y_range = 10.0
-        
-        # System state
-        self.last_activity = time.ticks_ms()
-        self.brightness = 60
-        self.debug_mode = True
-        self.sleep_timeout = config.System.SLEEP_TIMEOUT_MS
-        
-        # Menu items (Phase 4 enhanced)
-        self.menu_items = ["Calculator", "File Browser", "Settings", "Graph"]
-        if GAMES_AVAILABLE:
-            self.menu_items.append("Games")
-        
-        # Phase 4 menu items
-        if ENHANCED_MATH_AVAILABLE:
-            self.menu_items.extend(["Statistics", "Matrix", "Units", "Complex"])
-        
-        self.phase4_mode = None  # Track Phase 4 submodes
-            
-    def reset_activity(self):
-        """Reset activity timer"""
-        self.last_activity = time.ticks_ms()
-        
-    def get_inactive_time(self) -> int:
-        """Get time since last activity in milliseconds"""
-        return time.ticks_diff(time.ticks_ms(), self.last_activity)
-        
-    def switch_mode(self, new_mode: str):
-        """Switch application mode"""
-        if new_mode in ["calc", "menu", "files", "settings", "graph", "viewer"]:
-            self.current_mode = new_mode
-            logger.info(f"Switched to {new_mode} mode")
-            self.reset_activity()
-
 # ================= CALCULATOR APPLICATION =================
 class CalculatorApp:
     """Main calculator application class"""
@@ -571,7 +515,7 @@ class CalculatorApp:
         
         # Current surface for 3D plotting
         self.current_3d_surface = None
-        self.state = AppState()
+        self.state = AppState(config, logger, GAMES_AVAILABLE, ENHANCED_MATH_AVAILABLE)
         
         # Initialize USB interface (PC connectivity)
         self.usb_interface = None
