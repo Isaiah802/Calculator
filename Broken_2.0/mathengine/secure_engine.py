@@ -24,7 +24,7 @@ Date: December 2024
 import math
 import time
 import gc
-from typing import Dict, Tuple, Any, List
+# typing module not available in MicroPython - type hints work without import
 
 # Import enhanced math engine if available
 try:

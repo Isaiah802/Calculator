@@ -19,8 +19,8 @@ Date: November 6, 2025
 
 import time
 import json
-from typing import Dict, List, Optional, Tuple, Any
-from enum import Enum
+# typing module not available in MicroPython - type hints work without import
+# enum module not available in standard MicroPython
 import struct
 
 try:
@@ -56,14 +56,15 @@ class USBConfig:
     TX_BUFFER_SIZE = 512
     RX_BUFFER_SIZE = 512
 
-class NumpadMode(Enum):
+# Simple Enum replacement for MicroPython compatibility
+class NumpadMode:
     """Numpad operating modes"""
     STANDARD = "standard"      # Standard PC numpad
     SCIENTIFIC = "scientific"  # Scientific calculator functions
     CUSTOM = "custom"          # User-defined mappings
     MACRO = "macro"           # Macro recording/playback
 
-class MessageType(Enum):
+class MessageType:
     """Communication message types"""
     HEARTBEAT = 0x01
     CALCULATION = 0x02
@@ -141,17 +142,16 @@ class USBNumpadEmulator:
         # Custom mappings (user-definable)
         self.custom_map = {}
         
-    def set_mode(self, mode: NumpadMode):
+    def set_mode(self, mode):
         """Switch numpad operating mode"""
-        if isinstance(mode, str):
-            try:
-                mode = NumpadMode(mode)
-            except ValueError:
-                print(f"[USB] Invalid numpad mode: {mode}")
-                return False
+        # Validate mode is a valid value
+        valid_modes = [NumpadMode.STANDARD, NumpadMode.SCIENTIFIC, NumpadMode.CUSTOM, NumpadMode.MACRO]
+        if mode not in valid_modes:
+            print(f"[USB] Invalid numpad mode: {mode}")
+            return False
                 
         self.current_mode = mode
-        print(f"[USB] Numpad mode switched to: {mode.value}")
+        print(f"[USB] Numpad mode switched to: {mode}")
         return True
         
     def send_keypress(self, key: str, modifiers: List[int] = None) -> bool:
@@ -336,7 +336,7 @@ class USBSerialProtocol:
         self.packet_counter += 1
         return bytes(packet)
         
-    def _parse_packet(self, packet: bytes) -> Tuple[bool, MessageType, bytes]:
+    def _parse_packet(self, packet: bytes):
         """Parse received packet"""
         if len(packet) < 8:  # Minimum packet size
             return False, None, None
@@ -345,7 +345,7 @@ class USBSerialProtocol:
         if packet[:4] != USBConfig.MAGIC_HEADER:
             return False, None, None
             
-        msg_type = MessageType(packet[4])
+        msg_type = packet[4]  # MessageType is now just an int
         data_len = struct.unpack('<H', packet[5:7])[0]
         
         if len(packet) < 8 + data_len + 1:  # Header + data + checksum

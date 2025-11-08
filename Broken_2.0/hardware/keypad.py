@@ -7,7 +7,7 @@ Manages keypad scanning, debouncing, and long-press detection.
 """
 
 from machine import Pin
-from typing import Optional, List, Tuple
+# typing module not available in MicroPython - type hints work without import
 import time
 
 

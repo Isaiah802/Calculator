@@ -8,7 +8,7 @@ from machine import Pin
 import os
 import time
 import sdcard
-from typing import Optional, List
+# typing module not available in MicroPython - type hints work without import
 
 
 class FileSystemManager:

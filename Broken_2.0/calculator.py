@@ -24,7 +24,7 @@ from statistical_plots import StatisticalPlotter, ComplexPlotter
 from interactive_3d import Surface3D, Plot3DEngine, InteractiveGraphControls
 import framebuf, time, utime, math, os, gc
 import sdcard
-from typing import Optional, Dict, List, Any, Tuple
+# typing module not available in MicroPython - type hints work without import
 import json
 from core import AppState
 
