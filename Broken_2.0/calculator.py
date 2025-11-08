@@ -52,7 +52,7 @@ except ImportError:
 from hardware import SPIManager, DisplayManager, KeypadManager, PowerManager
 
 # Import math engine module
-from math.secure_engine import SecureMathEngine
+from mathengine.secure_engine import SecureMathEngine
 
 # Enhanced math engine is imported directly, so it's always available
 ENHANCED_MATH_AVAILABLE = True
@@ -837,6 +837,14 @@ class CalculatorApp:
                     
     def handle_global_keys(self, key: str, event_type: str) -> bool:
         """Handle global key combinations, return True if handled"""
+        # S key or Save key with long press opens menu
+        if key in ("S", "Save") and event_type == "long":
+            logger.info("Opening main menu...")
+            self.state.switch_mode("menu")
+            self.state.shift_mode = False
+            return True
+        
+        # S key with tap toggles shift mode
         if key == "S" and event_type == "tap":
             self.state.shift_mode = not self.state.shift_mode
             return True

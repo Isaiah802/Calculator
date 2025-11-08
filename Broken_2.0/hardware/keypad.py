@@ -7,7 +7,7 @@ Manages keypad scanning, debouncing, and long-press detection.
 """
 
 from machine import Pin
-from typing import Optional, List, Tuple, Set
+from typing import Optional, List, Tuple
 import time
 
 
@@ -46,7 +46,7 @@ class KeypadManager:
             (0,0): 'exp(',   (0,1): 'DEL',    (0,2): 'π',      (0,3): 'S'
         })
         
-    def scan_keys(self) -> Set[Tuple[int, int]]:
+    def scan_keys(self):  # Returns set of (row, col) tuples
         """Scan keypad and return pressed keys"""
         pressed = set()
         
