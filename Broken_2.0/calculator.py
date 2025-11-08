@@ -17,11 +17,11 @@ Date: December 2024
 """
 
 from machine import Pin, SPI, PWM, ADC
-from firmware.hardware_config import Pins, Display, Keypad, Power
-from firmware.enhanced_math_engine import EnhancedMathEngine
-from firmware.graphics_engine import GraphicsEngine, GraphColors, Point2D
-from firmware.statistical_plots import StatisticalPlotter, ComplexPlotter
-from firmware.interactive_3d import Surface3D, Plot3DEngine, InteractiveGraphControls
+import hardware_config
+from enhanced_math_engine import EnhancedMathEngine
+from graphics_engine import GraphicsEngine, GraphColors, Point2D
+from statistical_plots import StatisticalPlotter, ComplexPlotter
+from interactive_3d import Surface3D, Plot3DEngine, InteractiveGraphControls
 import framebuf, time, utime, math, os, gc
 import sdcard
 from typing import Optional, Dict, List, Any, Tuple
@@ -751,7 +751,7 @@ class CalculatorApp:
                 y_data = [p[1] for p in self.graphics_engine.data_points]
                 
                 # Calculate correlation
-                from firmware.enhanced_math_engine import StatisticalEngine
+                from enhanced_math_engine import StatisticalEngine
                 stats = StatisticalEngine()
                 correlation = stats.correlation(x_data, y_data)
                 slope, intercept, r_squared = stats.linear_regression(x_data, y_data)
