@@ -24,8 +24,8 @@ class Pins:
     # Power
     BATTERY_ADC = 26
     
-    # Keypad
-    KEYPAD_COLS = [2, 3, 4, 5]
+    # Keypad - columns reversed to match physical wiring
+    KEYPAD_COLS = [5, 4, 3, 2]
     KEYPAD_ROWS = [6, 7, 8, 9, 21, 27]
 
 class Display:
