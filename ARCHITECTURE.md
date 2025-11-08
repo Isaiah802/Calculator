@@ -30,18 +30,33 @@
 ```
 Calculator/
 ├── Broken_2.0/                    # Main application directory
-│   ├── calculator.py              # Main app (2,395 lines) - NEEDS REFACTORING
+│   ├── calculator.py              # Main app (~1,300 lines) - REFACTORED
 │   │   ├── Config                 # Configuration management
 │   │   ├── Logger                 # Logging system
-│   │   ├── SPIManager             # SPI bus management
-│   │   ├── DisplayManager         # ILI9341 display control
-│   │   ├── KeypadManager          # 6x4 keypad input
-│   │   ├── PowerManager           # Battery & power management
-│   │   ├── FileSystemManager      # SD card operations
-│   │   ├── SecureMathEngine       # Safe expression evaluation
-│   │   ├── UIManager              # User interface rendering
-│   │   ├── AppState               # Application state
 │   │   └── CalculatorApp          # Main application class
+│   │
+│   ├── hardware/                  # Hardware abstraction layer
+│   │   ├── __init__.py
+│   │   ├── spi_manager.py         # SPI bus management
+│   │   ├── display.py             # ILI9341 display control
+│   │   ├── keypad.py              # 6x4 keypad input
+│   │   └── power.py               # Battery & power management
+│   │
+│   ├── storage/                   # File system management
+│   │   ├── __init__.py
+│   │   └── filesystem.py          # SD card operations
+│   │
+│   ├── math/                      # Mathematical engine
+│   │   ├── __init__.py
+│   │   └── secure_engine.py       # Safe expression evaluation
+│   │
+│   ├── ui/                        # User interface
+│   │   ├── __init__.py
+│   │   └── ui_manager.py          # UI rendering
+│   │
+│   ├── core/                      # Core application components
+│   │   ├── __init__.py
+│   │   └── app_state.py           # Application state management
 │   │
 │   ├── enhanced_math_engine.py    # Advanced math (992 lines)
 │   │   └── EnhancedMathEngine     # Complex, matrix, statistics
