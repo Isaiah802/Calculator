@@ -362,7 +362,7 @@ class OptimizedGraphicsEngine:
 
 def create_optimized_graphics_engine(display):
     """Factory function to create optimized graphics engine"""
-    from firmware.graphics_engine import GraphicsEngine
+    from graphics_engine import GraphicsEngine
     
     base_engine = GraphicsEngine(display)
     return OptimizedGraphicsEngine(base_engine)

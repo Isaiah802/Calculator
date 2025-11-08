@@ -8,7 +8,7 @@ controls for mathematical visualization and exploration.
 
 import math
 from micropython import const
-from firmware.graphics_engine import GraphicsEngine, Point3D, GraphColors
+from graphics_engine import GraphicsEngine, Point3D, GraphColors
 
 class Surface3D:
     """3D surface representation"""

@@ -8,7 +8,7 @@ including histograms, scatter plots, box plots, and statistical analysis charts.
 
 import math
 from micropython import const
-from firmware.graphics_engine import GraphicsEngine, GraphColors, Point2D
+from graphics_engine import GraphicsEngine, GraphColors, Point2D
 
 class StatisticalPlotter:
     """Statistical data visualization and plotting"""

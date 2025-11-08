@@ -22,8 +22,8 @@ Date: December 2024
 import math
 import gc
 from micropython import const
-from firmware.hardware_config import Display, Pins
-from firmware.enhanced_math_engine import EnhancedMathEngine
+from hardware_config import Display, Pins
+from enhanced_math_engine import EnhancedMathEngine
 
 # Graphics Constants
 GRAPH_WIDTH = const(280)      # Graph area width

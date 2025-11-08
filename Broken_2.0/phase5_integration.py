@@ -8,10 +8,10 @@ complex number plotting, and interactive navigation controls.
 """
 
 import gc
-from firmware.graphics_engine import GraphicsEngine
-from firmware.statistical_plots import StatisticalPlotter, ComplexPlotter
-from firmware.interactive_3d import Surface3D, Plot3DEngine, InteractiveGraphControls
-from firmware.performance_optimizer import OptimizedGraphicsEngine, PERFORMANCE_MODE_ECO
+from graphics_engine import GraphicsEngine
+from statistical_plots import StatisticalPlotter, ComplexPlotter
+from interactive_3d import Surface3D, Plot3DEngine, InteractiveGraphControls
+from performance_optimizer import OptimizedGraphicsEngine, PERFORMANCE_MODE_ECO
 
 class Phase5GraphingSystem:
     """Complete Phase 5 graphing system integration"""
