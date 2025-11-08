@@ -888,10 +888,8 @@ class CalculatorApp:
         # Expression input
         self.ui.draw_input_field(10, 50, "Input", self.state.current_expression, True)
         
-        # Live result preview
-        live_result = self.math_engine.evaluate_live(self.state.current_expression)
-        result_display = live_result if live_result else self.state.last_result
-        self.ui.draw_input_field(10, 90, "Output", result_display)
+        # Show result only after = is pressed (no live evaluation)
+        self.ui.draw_input_field(10, 90, "Output", self.state.last_result)
         
         self.display.show()
         
