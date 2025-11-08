@@ -19,9 +19,8 @@ Date: November 6, 2025
 import math
 import cmath
 import re
-from typing import Union, List, Dict, Tuple, Any, Optional
 
-# MicroPython doesn't have statistics, decimal, fractions modules
+# MicroPython doesn't have typing, statistics, decimal, fractions modules
 # We'll implement basic stats functions ourselves
 
 # Basic statistics functions for MicroPython
@@ -179,7 +178,7 @@ class ComplexNumber:
         """Complex conjugate"""
         return ComplexNumber(self.real, -self.imag)
     
-    def to_polar(self) -> Tuple[float, float]:
+    def to_polar(self) :
         """Convert to polar form (magnitude, phase)"""
         return (self.magnitude(), self.phase())
     
@@ -194,7 +193,7 @@ class StatisticalEngine:
     """Comprehensive statistical analysis engine"""
     
     @staticmethod
-    def descriptive_stats(data: List[float]) -> Dict[str, float]:
+    def descriptive_stats(data) :
         """Calculate comprehensive descriptive statistics
         
         Args:
@@ -258,7 +257,7 @@ class StatisticalEngine:
         }
     
     @staticmethod
-    def _calculate_skewness(data: List[float], mean: float, stdev: float) -> float:
+    def _calculate_skewness(data, mean: float, stdev: float) -> float:
         """Calculate skewness (third moment)"""
         if stdev == 0:
             return 0
@@ -266,7 +265,7 @@ class StatisticalEngine:
         return sum(((x - mean) / stdev) ** 3 for x in data) / n
     
     @staticmethod
-    def _calculate_kurtosis(data: List[float], mean: float, stdev: float) -> float:
+    def _calculate_kurtosis(data, mean: float, stdev: float) -> float:
         """Calculate kurtosis (fourth moment)"""
         if stdev == 0:
             return 0
@@ -274,7 +273,7 @@ class StatisticalEngine:
         return sum(((x - mean) / stdev) ** 4 for x in data) / n - 3
     
     @staticmethod
-    def correlation(x: List[float], y: List[float]) -> float:
+    def correlation(x, y) -> float:
         """Calculate Pearson correlation coefficient"""
         if len(x) != len(y):
             raise ValueError("Datasets must have equal length")
@@ -284,7 +283,7 @@ class StatisticalEngine:
         return _correlation(x, y)
     
     @staticmethod
-    def linear_regression(x: List[float], y: List[float]) -> Dict[str, float]:
+    def linear_regression(x, y) :
         """Calculate linear regression parameters"""
         if len(x) != len(y):
             raise ValueError("Datasets must have equal length")
@@ -319,7 +318,7 @@ class StatisticalEngine:
         }
     
     @staticmethod
-    def probability_distributions(data: List[float]) -> Dict[str, Any]:
+    def probability_distributions(data) :
         """Test data against common probability distributions"""
         stats = StatisticalEngine.descriptive_stats(data)
         
@@ -339,7 +338,7 @@ class StatisticalEngine:
         }
     
     @staticmethod
-    def _test_normality(data: List[float]) -> float:
+    def _test_normality(data) -> float:
         """Simplified normality test"""
         # This is a simplified version - in practice, use scipy.stats
         stats = StatisticalEngine.descriptive_stats(data)
@@ -353,7 +352,7 @@ class StatisticalEngine:
 class MatrixEngine:
     """Matrix operations and linear algebra"""
     
-    def __init__(self, data: List[List[float]]):
+    def __init__(self, data):
         """Initialize matrix
         
         Args:
@@ -463,7 +462,7 @@ class MatrixEngine:
         
         return self._determinant_recursive(self.data)
     
-    def _determinant_recursive(self, matrix: List[List[float]]) -> float:
+    def _determinant_recursive(self, matrix):
         """Recursive determinant calculation"""
         n = len(matrix)
         
@@ -541,7 +540,7 @@ class MatrixEngine:
         
         return MatrixEngine(inverse_data)
     
-    def eigenvalues_2x2(self) -> Tuple[complex, complex]:
+    def eigenvalues_2x2(self) :
         """Calculate eigenvalues for 2x2 matrix"""
         if self.rows != 2 or self.cols != 2:
             raise ValueError("This method only works for 2x2 matrices")
@@ -809,7 +808,7 @@ class UnitConverter:
         else:
             raise ValueError(f"Unknown temperature unit: {to_unit}")
     
-    def get_units_in_category(self, category: str) -> List[str]:
+    def get_units_in_category(self, category: str) :
         """Get all units in a given category"""
         if category not in self.conversions:
             raise ValueError(f"Unknown category: {category}")
@@ -819,7 +818,7 @@ class UnitConverter:
         else:
             return list(self.conversions[category]['units'].keys())
     
-    def get_all_categories(self) -> List[str]:
+    def get_all_categories(self) :
         """Get all available unit categories"""
         return list(self.conversions.keys())
 
@@ -847,7 +846,7 @@ class EnhancedMathEngine:
             'G': 6.67430e-11,              # Gravitational constant
         }
     
-    def evaluate_complex_expression(self, expression: str) -> Union[float, ComplexNumber, str]:
+    def evaluate_complex_expression(self, expression: str) :
         """Evaluate expression with complex number support"""
         try:
             # Handle special functions and constants
@@ -902,7 +901,7 @@ class EnhancedMathEngine:
         
         return expr
     
-    def _safe_evaluate(self, expr: str) -> Union[float, complex]:
+    def _safe_evaluate(self, expr: str) :
         """Safely evaluate mathematical expression"""
         # Define safe namespace for evaluation
         safe_dict = {
@@ -935,7 +934,7 @@ class EnhancedMathEngine:
         
         return eval(expr, safe_dict, {})
     
-    def create_matrix(self, data: List[List[float]]) -> MatrixEngine:
+    def create_matrix(self, data):
         """Create matrix from data"""
         return MatrixEngine(data)
     
@@ -943,7 +942,7 @@ class EnhancedMathEngine:
         """Create complex number"""
         return ComplexNumber(real, imag)
     
-    def statistical_analysis(self, data: List[float]) -> Dict[str, Any]:
+    def statistical_analysis(self, data) :
         """Perform comprehensive statistical analysis"""
         return StatisticalEngine.descriptive_stats(data)
     
@@ -951,7 +950,7 @@ class EnhancedMathEngine:
         """Convert between units"""
         return self.unit_converter.convert(value, from_unit, to_unit)
     
-    def get_available_units(self, category: str = None) -> Dict[str, List[str]]:
+    def get_available_units(self, category=None):
         """Get available units by category"""
         if category:
             return {category: self.unit_converter.get_units_in_category(category)}
