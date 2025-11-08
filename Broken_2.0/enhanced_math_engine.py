@@ -18,14 +18,75 @@ Date: November 6, 2025
 
 import math
 import cmath
-import statistics
 import re
 from typing import Union, List, Dict, Tuple, Any, Optional
-from decimal import Decimal, getcontext
-from fractions import Fraction
 
-# Set high precision for decimal operations
-getcontext().prec = 50
+# MicroPython doesn't have statistics, decimal, fractions modules
+# We'll implement basic stats functions ourselves
+
+# Basic statistics functions for MicroPython
+def _mean(data):
+    """Calculate mean/average"""
+    return sum(data) / len(data)
+
+def _median(data):
+    """Calculate median"""
+    sorted_data = sorted(data)
+    n = len(sorted_data)
+    mid = n // 2
+    if n % 2 == 0:
+        return (sorted_data[mid - 1] + sorted_data[mid]) / 2
+    return sorted_data[mid]
+
+def _mode(data):
+    """Calculate mode - most common value"""
+    from collections import Counter
+    counts = {}
+    for item in data:
+        counts[item] = counts.get(item, 0) + 1
+    max_count = max(counts.values())
+    modes = [k for k, v in counts.items() if v == max_count]
+    if len(modes) == len(data):
+        raise ValueError("No unique mode")
+    return modes[0] if len(modes) == 1 else modes
+
+def _variance(data):
+    """Calculate variance"""
+    m = _mean(data)
+    return sum((x - m) ** 2 for x in data) / (len(data) - 1)
+
+def _stdev(data):
+    """Calculate standard deviation"""
+    return math.sqrt(_variance(data))
+
+def _quantiles(data, n=4):
+    """Calculate quantiles (simplified version)"""
+    sorted_data = sorted(data)
+    result = []
+    for i in range(1, n):
+        pos = i * len(sorted_data) / n
+        if pos == int(pos):
+            result.append(sorted_data[int(pos)])
+        else:
+            lower = sorted_data[int(pos)]
+            upper = sorted_data[int(pos) + 1] if int(pos) + 1 < len(sorted_data) else sorted_data[int(pos)]
+            result.append((lower + upper) / 2)
+    return result
+
+def _correlation(x, y):
+    """Calculate Pearson correlation coefficient"""
+    n = len(x)
+    mean_x = _mean(x)
+    mean_y = _mean(y)
+    
+    numerator = sum((x[i] - mean_x) * (y[i] - mean_y) for i in range(n))
+    denom_x = sum((x[i] - mean_x) ** 2 for i in range(n))
+    denom_y = sum((y[i] - mean_y) ** 2 for i in range(n))
+    
+    if denom_x == 0 or denom_y == 0:
+        return 0
+    
+    return numerator / math.sqrt(denom_x * denom_y)
 
 class ComplexNumber:
     """Enhanced complex number implementation with better formatting"""
@@ -149,19 +210,19 @@ class StatisticalEngine:
         sorted_data = sorted(data)
         
         # Basic measures
-        mean_val = statistics.mean(data)
-        median_val = statistics.median(data)
+        mean_val = _mean(data)
+        median_val = _median(data)
         
         # Mode (handle multimodal cases)
         try:
-            mode_val = statistics.mode(data)
-        except statistics.StatisticsError:
+            mode_val = _mode(data)
+        except ValueError:
             mode_val = "No unique mode"
         
         # Variance and standard deviation
         if n > 1:
-            variance_val = statistics.variance(data)
-            stdev_val = statistics.stdev(data)
+            variance_val = _variance(data)
+            stdev_val = _stdev(data)
         else:
             variance_val = 0
             stdev_val = 0
@@ -171,8 +232,8 @@ class StatisticalEngine:
         max_val = max(data)
         range_val = max_val - min_val
         
-        q1 = statistics.quantiles(data, n=4)[0] if n > 3 else sorted_data[0]
-        q3 = statistics.quantiles(data, n=4)[2] if n > 3 else sorted_data[-1]
+        q1 = _quantiles(data, n=4)[0] if n > 3 else sorted_data[0]
+        q3 = _quantiles(data, n=4)[2] if n > 3 else sorted_data[-1]
         iqr = q3 - q1
         
         # Advanced measures
@@ -220,7 +281,7 @@ class StatisticalEngine:
         if len(x) < 2:
             raise ValueError("Need at least 2 data points")
         
-        return statistics.correlation(x, y)
+        return _correlation(x, y)
     
     @staticmethod
     def linear_regression(x: List[float], y: List[float]) -> Dict[str, float]:
@@ -231,8 +292,8 @@ class StatisticalEngine:
             raise ValueError("Need at least 2 data points")
         
         n = len(x)
-        mean_x = statistics.mean(x)
-        mean_y = statistics.mean(y)
+        mean_x = _mean(x)
+        mean_y = _mean(y)
         
         # Calculate slope (b1) and intercept (b0)
         numerator = sum((x[i] - mean_x) * (y[i] - mean_y) for i in range(n))
@@ -918,7 +979,7 @@ class EnhancedMathEngine:
         if precision < 1 or precision > 50:
             raise ValueError("Precision must be between 1 and 50")
         self.precision = precision
-        getcontext().prec = precision
+        # Note: MicroPython doesn't have decimal.getcontext(), so precision is just stored
 
 # Test function for demonstration
 def test_enhanced_math_engine():
