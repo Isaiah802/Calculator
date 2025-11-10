@@ -75,7 +75,7 @@ class AppState:
         
     def switch_mode(self, new_mode: str):
         """Switch application mode"""
-        if new_mode in ["calc", "menu", "files", "settings", "graph", "viewer"]:
+        if new_mode in ["calc", "menu", "files", "settings", "graph", "viewer", "phase4"]:
             self.current_mode = new_mode
             self._logger.info(f"Switched to {new_mode} mode")
             self.reset_activity()
