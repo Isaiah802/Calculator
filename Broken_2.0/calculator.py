@@ -47,6 +47,14 @@ except ImportError:
     USB_AVAILABLE = False
     print("[WARNING] USB interface not available - PC connectivity disabled")
 
+# Import settings module
+try:
+    from settings import SettingsManager, create_settings_manager
+    SETTINGS_AVAILABLE = True
+except ImportError:
+    SETTINGS_AVAILABLE = False
+    print("[WARNING] Settings module not found - settings disabled")
+
 # Import hardware abstraction layer
 from hardware import SPIManager, DisplayManager, KeypadManager, PowerManager
 
@@ -191,6 +199,15 @@ class CalculatorApp:
         self.math_engine.set_logger(logger)
         self.ui = UIManager(self.display, self.power)
         
+        # Initialize settings manager
+        self.settings = None
+        if SETTINGS_AVAILABLE:
+            try:
+                self.settings = create_settings_manager(self.filesystem, "settings.json")
+                logger.info("Settings manager initialized")
+            except Exception as e:
+                logger.error(f"Settings initialization failed: {e}")
+        
         # Phase 5: Initialize Advanced Graphing System
         self.graphics_engine = GraphicsEngine(self.display)
         self.statistical_plotter = StatisticalPlotter(self.graphics_engine)
@@ -311,6 +328,67 @@ class CalculatorApp:
                 self.state.switch_mode("calc")  # Return to calculator with complex mode
         elif key == "C":  # Back
             self.state.switch_mode("calc")
+    
+    def handle_settings_mode(self, key: str, event_type: str):
+        """Handle settings mode input"""
+        if event_type != "tap":
+            return
+        
+        if not SETTINGS_AVAILABLE or not self.settings:
+            # Settings not available, return to menu
+            self.state.switch_mode("menu")
+            return
+        
+        # Settings menu items
+        settings_items = [
+            "Angle Mode",
+            "Decimal Places",
+            "Brightness",
+            "Auto-Sleep",
+            "Scientific Notation",
+            "Reset to Defaults"
+        ]
+        
+        # Initialize settings index if not exists
+        if not hasattr(self.state, 'settings_index'):
+            self.state.settings_index = 0
+            
+        if key == "2":  # Up
+            self.state.settings_index = (self.state.settings_index - 1) % len(settings_items)
+        elif key == "8":  # Down
+            self.state.settings_index = (self.state.settings_index + 1) % len(settings_items)
+        elif key == "=":  # Select/Toggle
+            selected = settings_items[self.state.settings_index]
+            if selected == "Angle Mode":
+                self.settings.toggle_angle_mode()
+                logger.info(f"Angle mode: {self.settings.get_angle_mode()}")
+            elif selected == "Decimal Places":
+                # Cycle through 2, 4, 6, 8, 10
+                current = self.settings.get_decimal_places()
+                next_val = {2: 4, 4: 6, 6: 8, 8: 10, 10: 2}.get(current, 4)
+                self.settings.set_decimal_places(next_val)
+                logger.info(f"Decimal places: {next_val}")
+            elif selected == "Brightness":
+                # Cycle through 25, 50, 75, 100
+                current = self.settings.get_brightness()
+                next_val = {25: 50, 50: 75, 75: 100, 100: 25}.get(current, 80)
+                self.settings.set_brightness(next_val)
+                self.power.set_brightness(next_val)
+                logger.info(f"Brightness: {next_val}%")
+            elif selected == "Auto-Sleep":
+                # Cycle through 1, 3, 5, 10, 0 (disabled)
+                current = self.settings.get_auto_sleep_minutes()
+                next_val = {1: 3, 3: 5, 5: 10, 10: 0, 0: 1}.get(current, 5)
+                self.settings.set_auto_sleep_minutes(next_val)
+                logger.info(f"Auto-sleep: {next_val} min")
+            elif selected == "Scientific Notation":
+                self.settings.toggle_scientific_notation()
+                logger.info(f"Scientific notation: {self.settings.get_scientific_notation()}")
+            elif selected == "Reset to Defaults":
+                self.settings.reset_to_defaults()
+                logger.info("Settings reset to defaults")
+        elif key == "C":  # Back
+            self.state.switch_mode("menu")
             
     def handle_graph_mode(self, key: str, event_type: str):
         """Handle advanced graph mode input - Phase 5 Enhanced"""
@@ -1021,6 +1099,64 @@ class CalculatorApp:
         
         self.display.show()
     
+    
+    def draw_settings_screen(self):
+        """Draw settings screen"""
+        self.display.clear()
+        
+        # Status bar  
+        voltage = self.power.read_battery_voltage()
+        percentage = self.power.get_battery_percentage(voltage)
+        self.ui.draw_status_bar(self.state.shift_mode, voltage, percentage)
+        
+        if not SETTINGS_AVAILABLE or not self.settings:
+            # Settings not available
+            self.display.draw_text(config.UI.TEXT_MARGIN, 80, "Settings Module", config.UI.WARNING)
+            self.display.draw_text(config.UI.TEXT_MARGIN, 100, "Not Available", config.UI.WARNING)
+            self.display.draw_text(config.UI.TEXT_MARGIN, 140, "Press C to return", config.UI.FOREGROUND)
+            self.display.show()
+            return
+        
+        # Settings title
+        self.display.draw_text(config.UI.TEXT_MARGIN, 40, "Settings", config.UI.FOREGROUND)
+        
+        # Settings menu items with current values
+        settings_items = [
+            ("Angle Mode", self.settings.get_angle_mode().upper()),
+            ("Decimal Places", str(self.settings.get_decimal_places())),
+            ("Brightness", f"{self.settings.get_brightness()}%"),
+            ("Auto-Sleep", f"{self.settings.get_auto_sleep_minutes()} min" if self.settings.get_auto_sleep_minutes() > 0 else "Off"),
+            ("Sci Notation", "On" if self.settings.get_scientific_notation() else "Off"),
+            ("Reset Defaults", "")
+        ]
+        
+        # Initialize settings index if not exists
+        if not hasattr(self.state, 'settings_index'):
+            self.state.settings_index = 0
+        
+        y = 65
+        for i, (name, value) in enumerate(settings_items):
+            selected = (i == self.state.settings_index)
+            color = config.UI.ACCENT if selected else config.UI.FOREGROUND
+            
+            # Draw setting name
+            prefix = "> " if selected else "  "
+            self.display.draw_text(config.UI.TEXT_MARGIN, y, f"{prefix}{name}", color)
+            
+            # Draw current value
+            if value:
+                value_x = config.UI.TEXT_MARGIN + 150
+                self.display.draw_text(value_x, y, value, color)
+            
+            y += config.UI.MENU_ITEM_HEIGHT + 2
+            
+        # Help text
+        help_text = "Use ↑/↓ navigate, = select, C exit"
+        self.display.draw_text(config.UI.TEXT_MARGIN, self.display.height - 20, 
+                              help_text[:40], config.UI.FOREGROUND)
+        
+        self.display.show()
+    
     def draw_phase4_screen(self):
         """Draw Phase 4 enhanced mathematical features screen"""
         self.display.clear()
@@ -1223,6 +1359,8 @@ class CalculatorApp:
             self.draw_calculator_screen()
         elif self.state.current_mode == "menu":
             self.draw_menu_screen()
+        elif self.state.current_mode == "settings":
+            self.draw_settings_screen()
         elif self.state.current_mode == "graph":
             self.draw_graph_screen()
         elif self.state.current_mode == "phase4":
@@ -1256,6 +1394,8 @@ class CalculatorApp:
                 self.handle_calculator_mode(key_label, event_type)
             elif self.state.current_mode == "menu":
                 self.handle_menu_mode(key_label, event_type)
+            elif self.state.current_mode == "settings":
+                self.handle_settings_mode(key_label, event_type)
             elif self.state.current_mode == "graph":
                 self.handle_graph_mode(key_label, event_type)
             elif self.state.current_mode == "phase4":
