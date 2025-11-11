@@ -1,276 +1,265 @@
 # Next Steps for AI Agent - November 11, 2025
 
 **Last Updated:** November 11, 2025  
-**Current Status:** Phase 1 Complete ✅ | Task 2.1 Complete ✅ | Ready for Task 2.2
+**Current Status:** Phase 1 Complete ✅ | Tasks 2.1-2.2 Complete ✅ | Ready for Task 2.3
 
 ---
 
-## 🎯 IMMEDIATE TASK: Task 2.2 - Scientific Calculator Module
+## 🎯 IMMEDIATE TASK: Task 2.3 - Settings Management Module
 
 ### Overview
-Implement the scientific calculator module with trigonometric, logarithmic, exponential, and statistical functions.
+Implement the settings management module to persist user preferences and calculator settings to SD card.
 
 ### Current State ✅
 - **Phase 1 Complete:** All refactoring tasks (1.1-1.5) are done
-- **Task 2.1 Complete:** Games module (Snake and Pong) implemented and working
+- **Task 2.1 Complete:** Games module (Snake and Pong) implemented and working ✅
+- **Task 2.2 Complete:** Scientific calculator module with 30+ functions implemented ✅
 - **All code compiles successfully:** No syntax errors
 - **Mode switching works:** `AppState.switch_mode()` is functional
 - **Calculation behavior correct:** Expressions evaluate only on "=" press
 - **No ImportErrors:** All problematic imports have been handled with try/except
 
 ### What's Already Available
-1. **Enhanced Math Engine:** `enhanced_math_engine.py` (992 lines) - Already imported and working
-   - Contains advanced mathematical functions
-   - Complex number support
-   - Matrix operations
-   - Statistical functions
-   - Unit conversions
-
-2. **Secure Math Engine:** `mathengine/secure_engine.py` (435 lines) - Working
-   - Input sanitization
-   - Timeout protection
-   - Integration with EnhancedMathEngine
-
-3. **Modular Architecture:** All hardware and core modules extracted and working
+1. **File System Manager:** `storage/filesystem.py` (206 lines) - Working
+   - SD card read/write operations
+   - File creation and deletion
+   - Transaction support
+   
+2. **Configuration System:** `Config` class in `calculator.py` - Working
+   - Centralized configuration management
+   - Hardware, System, and UI settings
+   
+3. **Enhanced Math Engine:** `enhanced_math_engine.py` (992 lines) - Working
+   - Advanced mathematical functions already available
+   
+4. **Scientific Calculator:** `scientific/functions.py` (575 lines) - Complete ✅
+   - Angle mode management (degrees/radians)
+   - 30+ scientific functions
+   
+5. **Modular Architecture:** All hardware and core modules extracted and working
    - `core/app_state.py` - State management ✅
    - `hardware/` - Display, Keypad, SPI, Power ✅
    - `mathengine/secure_engine.py` - Math evaluation ✅
    - `storage/filesystem.py` - SD card operations ✅
    - `ui/ui_manager.py` - UI rendering ✅
    - `games/` - Snake and Pong games ✅
+   - `scientific/` - Scientific calculator functions ✅
 
 ---
 
-## 📋 Task 2.2 Requirements
+## 📋 Task 2.3 Requirements
 
 ### Objective
-Create a scientific calculator module that organizes and exposes scientific functions in a clean, easy-to-use interface.
+Create a settings management module that stores and retrieves user preferences and calculator settings, with persistence to SD card.
 
 ### What to Implement
 
-#### 1. Create `Broken_2.0/scientific/functions.py`
+#### 1. Create `Broken_2.0/settings/settings_manager.py`
 This file should contain:
 
 ```python
 #!/usr/bin/env python3
 """
-Scientific Calculator Functions Module
+Settings Management Module
 
-This module provides scientific calculator functions including:
-- Trigonometric functions (sin, cos, tan, etc.)
-- Inverse trigonometric functions (asin, acos, atan)
-- Hyperbolic functions (sinh, cosh, tanh)
-- Logarithmic and exponential functions
-- Statistical functions
-- Angle mode conversion (degrees/radians)
+This module provides settings management functionality including:
+- User preference storage and retrieval
+- Calculator settings persistence
+- SD card integration for settings file
+- Default settings management
+- Settings validation
 
-The module integrates with the EnhancedMathEngine for advanced calculations.
+Settings managed:
+- Angle mode (degrees/radians)
+- Display format (decimal places, scientific notation)
+- Brightness level
+- Auto-sleep timeout
+- Calculation history size
+- UI theme/colors (if applicable)
 """
 
-import math
-from typing import Optional, Tuple
+import json
 
-class ScientificCalculator:
-    """Scientific calculator functions with angle mode support."""
+class SettingsManager:
+    """Manage calculator settings with SD card persistence."""
     
-    def __init__(self, enhanced_math_engine=None):
+    DEFAULT_SETTINGS = {
+        "angle_mode": "deg",  # "deg" or "rad"
+        "decimal_places": 4,
+        "scientific_notation": False,
+        "brightness": 80,  # 0-100
+        "auto_sleep_minutes": 5,
+        "history_size": 50,
+        "theme": "default"
+    }
+    
+    def __init__(self, filesystem_manager=None, settings_file="settings.json"):
         """
-        Initialize scientific calculator.
+        Initialize settings manager.
         
         Args:
-            enhanced_math_engine: Optional EnhancedMathEngine instance for advanced features
+            filesystem_manager: FileSystemManager instance for SD card access
+            settings_file: Name of settings file on SD card
         """
-        self.angle_mode = "deg"  # "deg" or "rad"
-        self.enhanced_engine = enhanced_math_engine
+        self.fs_manager = filesystem_manager
+        self.settings_file = settings_file
+        self.settings = self.DEFAULT_SETTINGS.copy()
+        self.load_settings()
     
-    # Trigonometric functions
-    def sin(self, x: float) -> float:
-        """Calculate sine of x (respects angle mode)."""
-        if self.angle_mode == "deg":
-            x = math.radians(x)
-        return math.sin(x)
-    
-    def cos(self, x: float) -> float:
-        """Calculate cosine of x (respects angle mode)."""
-        if self.angle_mode == "deg":
-            x = math.radians(x)
-        return math.cos(x)
-    
-    def tan(self, x: float) -> float:
-        """Calculate tangent of x (respects angle mode)."""
-        if self.angle_mode == "deg":
-            x = math.radians(x)
-        return math.tan(x)
-    
-    # Inverse trigonometric functions
-    def asin(self, x: float) -> float:
-        """Calculate arcsine of x (returns in current angle mode)."""
-        result = math.asin(x)
-        if self.angle_mode == "deg":
-            result = math.degrees(result)
-        return result
-    
-    def acos(self, x: float) -> float:
-        """Calculate arccosine of x (returns in current angle mode)."""
-        result = math.acos(x)
-        if self.angle_mode == "deg":
-            result = math.degrees(result)
-        return result
-    
-    def atan(self, x: float) -> float:
-        """Calculate arctangent of x (returns in current angle mode)."""
-        result = math.atan(x)
-        if self.angle_mode == "deg":
-            result = math.degrees(result)
-        return result
-    
-    # Hyperbolic functions
-    def sinh(self, x: float) -> float:
-        """Calculate hyperbolic sine of x."""
-        return math.sinh(x)
-    
-    def cosh(self, x: float) -> float:
-        """Calculate hyperbolic cosine of x."""
-        return math.cosh(x)
-    
-    def tanh(self, x: float) -> float:
-        """Calculate hyperbolic tangent of x."""
-        return math.tanh(x)
-    
-    # Logarithmic and exponential functions
-    def log(self, x: float, base: float = 10) -> float:
-        """Calculate logarithm of x with specified base (default 10)."""
-        return math.log(x, base)
-    
-    def ln(self, x: float) -> float:
-        """Calculate natural logarithm of x."""
-        return math.log(x)
-    
-    def exp(self, x: float) -> float:
-        """Calculate e^x."""
-        return math.exp(x)
-    
-    def pow(self, x: float, y: float) -> float:
-        """Calculate x^y."""
-        return math.pow(x, y)
-    
-    def sqrt(self, x: float) -> float:
-        """Calculate square root of x."""
-        return math.sqrt(x)
-    
-    # Angle mode management
-    def set_angle_mode(self, mode: str):
-        """
-        Set angle mode for trigonometric functions.
+    def load_settings(self):
+        """Load settings from SD card, use defaults if file doesn't exist."""
+        if not self.fs_manager:
+            return
         
-        Args:
-            mode: Either "deg" or "rad"
-        """
-        if mode in ["deg", "rad"]:
-            self.angle_mode = mode
+        try:
+            content = self.fs_manager.read_file(self.settings_file)
+            if content:
+                loaded = json.loads(content)
+                # Merge with defaults to handle new settings
+                for key in self.DEFAULT_SETTINGS:
+                    if key in loaded:
+                        self.settings[key] = loaded[key]
+        except Exception as e:
+            print(f"[WARNING] Could not load settings: {e}")
+            # Keep default settings
     
-    def get_angle_mode(self) -> str:
+    def save_settings(self):
+        """Save current settings to SD card."""
+        if not self.fs_manager:
+            return False
+        
+        try:
+            content = json.dumps(self.settings)
+            return self.fs_manager.write_file(self.settings_file, content)
+        except Exception as e:
+            print(f"[ERROR] Could not save settings: {e}")
+            return False
+    
+    def get(self, key, default=None):
+        """Get a setting value."""
+        return self.settings.get(key, default)
+    
+    def set(self, key, value):
+        """Set a setting value and save to SD card."""
+        self.settings[key] = value
+        return self.save_settings()
+    
+    def reset_to_defaults(self):
+        """Reset all settings to default values."""
+        self.settings = self.DEFAULT_SETTINGS.copy()
+        return self.save_settings()
+    
+    # Convenience methods for common settings
+    def get_angle_mode(self):
         """Get current angle mode."""
-        return self.angle_mode
+        return self.get("angle_mode", "deg")
     
-    # Statistical functions (if enhanced engine available)
-    def mean(self, data: list) -> float:
-        """Calculate mean of data."""
-        if self.enhanced_engine:
-            return self.enhanced_engine.calculate_mean(data)
-        return sum(data) / len(data)
+    def set_angle_mode(self, mode):
+        """Set angle mode (deg or rad)."""
+        if mode not in ["deg", "rad"]:
+            raise ValueError("Angle mode must be 'deg' or 'rad'")
+        return self.set("angle_mode", mode)
     
-    def median(self, data: list) -> float:
-        """Calculate median of data."""
-        if self.enhanced_engine:
-            return self.enhanced_engine.calculate_median(data)
-        sorted_data = sorted(data)
-        n = len(sorted_data)
-        mid = n // 2
-        if n % 2 == 0:
-            return (sorted_data[mid-1] + sorted_data[mid]) / 2
-        return sorted_data[mid]
+    def get_decimal_places(self):
+        """Get number of decimal places for display."""
+        return self.get("decimal_places", 4)
     
-    def std_dev(self, data: list) -> float:
-        """Calculate standard deviation of data."""
-        if self.enhanced_engine:
-            return self.enhanced_engine.calculate_std_dev(data)
-        mean_val = self.mean(data)
-        variance = sum((x - mean_val) ** 2 for x in data) / len(data)
-        return math.sqrt(variance)
+    def set_decimal_places(self, places):
+        """Set number of decimal places (0-10)."""
+        places = max(0, min(10, int(places)))
+        return self.set("decimal_places", places)
+    
+    def get_brightness(self):
+        """Get brightness level (0-100)."""
+        return self.get("brightness", 80)
+    
+    def set_brightness(self, level):
+        """Set brightness level (0-100)."""
+        level = max(0, min(100, int(level)))
+        return self.set("brightness", level)
 
 
-# Convenience functions for direct use
-def create_scientific_calculator(enhanced_math_engine=None) -> ScientificCalculator:
-    """Create and return a ScientificCalculator instance."""
-    return ScientificCalculator(enhanced_math_engine)
+def create_settings_manager(filesystem_manager=None, settings_file="settings.json"):
+    """
+    Create and return a SettingsManager instance.
+    
+    Args:
+        filesystem_manager: FileSystemManager instance
+        settings_file: Settings file name
+        
+    Returns:
+        SettingsManager instance
+    """
+    return SettingsManager(filesystem_manager, settings_file)
 ```
 
-#### 2. Update `Broken_2.0/scientific/__init__.py`
+#### 2. Update `Broken_2.0/settings/__init__.py`
 ```python
 """
-Scientific Calculator Module
+Settings Management Module
 
-This module provides scientific calculator functionality including:
-- Trigonometric functions
-- Logarithmic and exponential functions
-- Statistical calculations
-- Angle mode management (degrees/radians)
+This module provides settings management functionality including:
+- User preference storage and retrieval
+- Calculator settings persistence to SD card
+- Default settings management
+- Settings validation
 """
 
-from .functions import ScientificCalculator, create_scientific_calculator
+from .settings_manager import SettingsManager, create_settings_manager
 
-__all__ = ['ScientificCalculator', 'create_scientific_calculator']
+__all__ = ['SettingsManager', 'create_settings_manager']
 ```
 
 #### 3. Integration Points
 
 **In calculator.py**, you may need to:
-- Import the scientific calculator module
-- Create an instance: `self.scientific_calc = create_scientific_calculator(self.math_engine.enhanced_engine)`
-- Add scientific functions to the calculator mode or create a dedicated scientific mode
-- Update the UI to show angle mode (DEG/RAD indicator)
+- Import the settings module
+- Create an instance: `self.settings = create_settings_manager(self.filesystem)`
+- Load settings on startup
+- Use settings throughout the application (angle mode, display format, etc.)
+- Optionally add a settings menu for user configuration
 
 ---
 
 ## ✅ Testing Checklist
 
-Before marking Task 2.2 complete, ensure:
+Before marking Task 2.3 complete, ensure:
 
-- [ ] `python3 -m py_compile Broken_2.0/scientific/functions.py` passes
-- [ ] `python3 -m py_compile Broken_2.0/scientific/__init__.py` passes
-- [ ] Test basic trig functions: sin(30°) = 0.5, cos(0°) = 1, tan(45°) = 1
-- [ ] Test angle mode switching: sin(π/2 rad) = 1
-- [ ] Test logarithms: log(100) = 2, ln(e) = 1
-- [ ] Test inverse trig: asin(0.5) = 30° (in deg mode)
-- [ ] Test statistical functions if implemented
-- [ ] Integration with calculator.py works
+- [ ] `python3 -m py_compile Broken_2.0/settings/settings_manager.py` passes
+- [ ] `python3 -m py_compile Broken_2.0/settings/__init__.py` passes
+- [ ] Test settings creation with defaults
+- [ ] Test loading/saving settings to SD card (or mock file system)
+- [ ] Test individual setting getters and setters
+- [ ] Test reset_to_defaults() functionality
+- [ ] Test settings validation (e.g., brightness 0-100)
+- [ ] Integration with calculator.py works (if implemented)
 - [ ] No syntax errors in any file
-- [ ] Update TASK_COMPLETION_SUMMARY.md to mark Task 2.2 as complete
+- [ ] Update TASK_COMPLETION_SUMMARY.md to mark Task 2.3 as complete
 
 ---
 
 ## 📝 Documentation Updates Required
 
-After completing Task 2.2, update these files:
+After completing Task 2.3, update these files:
 
 1. **TASK_COMPLETION_SUMMARY.md**
-   - Mark Task 2.2 as ✅ COMPLETE
+   - Mark Task 2.3 as ✅ COMPLETE
    - Add completion date
    - Update metrics (lines added, files created)
 
-2. **QUICK_STATUS.md**
-   - Update Phase 2 progress (from 20% to 40%)
-   - Update file structure showing new scientific files
-   - Update next action to Task 2.3
+2. **QUICK_STATUS.md** (if exists)
+   - Update Phase 2 progress (from 40% to 60%)
+   - Update file structure showing new settings files
+   - Update next action to Task 2.4
 
 3. **AI_AGENT_GUIDE.md**
    - Update "Current Project State" section
    - Update Phase 2 status
+   - Update metrics table
 
 4. **This file (NEXT_STEPS.md)**
-   - Update to point to Task 2.3 as the next task
-   - Archive Task 2.2 completion details
+   - Update to point to Task 2.4 as the next task
+   - Archive Task 2.3 completion details
 
 ---
 
@@ -316,39 +305,40 @@ For detailed information, see:
 | Metric | Value |
 |--------|-------|
 | Phase 1 Tasks Complete | 5/5 (100%) ✅ |
-| Phase 2 Tasks Complete | 1/5 (20%) |
-| Total Tasks Complete | 6/20 (30%) |
-| Main calculator.py | 1,291 lines |
+| Phase 2 Tasks Complete | 2/5 (40%) |
+| Total Tasks Complete | 7/20 (35%) |
+| Main calculator.py | 1,329 lines |
 | Extracted modules | 1,414 lines |
 | Games module | 602 lines ✅ |
+| Scientific module | 575 lines ✅ |
 | Compilation errors | 0 ✅ |
 
 ---
 
 ## 💪 You Can Do This!
 
-Task 2.2 is a **Medium complexity** task with an estimated **300 lines** of code. You have:
-- ✅ All dependencies complete (Task 1.3 SecureMathEngine is done)
-- ✅ Enhanced math engine already available
+Task 2.3 is a **Medium complexity** task with an estimated **200 lines** of code. You have:
+- ✅ All dependencies complete (Task 1.2 FileSystemManager is done)
+- ✅ File system manager already available
 - ✅ Clear specifications above
 - ✅ Example code structure provided
 - ✅ Clean codebase with no errors
 - ✅ Good documentation to reference
 
-**Estimated time:** 2-3 hours for a focused AI agent
+**Estimated time:** 1-2 hours for a focused AI agent
 
-**Next task after this:** Task 2.3 - Settings Management (easier, LOW complexity)
+**Next task after this:** Task 2.4 - SD Card Module (easier, LOW complexity) or Task 2.5 - Graphing Module (medium, HIGH priority)
 
 ---
 
 ## 🎯 Summary
 
 **What to do:**
-1. Create `scientific/functions.py` with ScientificCalculator class
-2. Update `scientific/__init__.py` with exports
-3. Integrate with calculator.py
-4. Test all scientific functions
-5. Update documentation (TASK_COMPLETION_SUMMARY.md, etc.)
+1. Create `settings/settings_manager.py` with SettingsManager class
+2. Update `settings/__init__.py` with exports
+3. Integrate with calculator.py (optional but recommended)
+4. Test all settings functions
+5. Update documentation (TASK_COMPLETION_SUMMARY.md, AI_AGENT_GUIDE.md, etc.)
 
 **What NOT to do:**
 - Don't import typing, statistics, or firmware modules
@@ -358,11 +348,12 @@ Task 2.2 is a **Medium complexity** task with an estimated **300 lines** of code
 
 **Success looks like:**
 - All Python files compile without errors
-- Scientific functions work correctly
-- Angle mode (deg/rad) switching works
-- Integration with main calculator is clean
+- Settings can be saved and loaded from SD card (or mock file system)
+- Default settings work properly
+- Setting validation works (e.g., brightness 0-100)
+- Integration with main calculator is clean (if implemented)
 - Documentation is updated
-- Ready for Task 2.3
+- Ready for Task 2.4 or 2.5
 
 ---
 
