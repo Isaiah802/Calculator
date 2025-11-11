@@ -27,7 +27,7 @@ This directory contains detailed task specifications for breaking down the Calcu
 
 | Task | File | Status | Complexity | Dependencies |
 |------|------|--------|------------|--------------|
-| 2.1 | [Games Module](TASK_2.1_Games_Module.md) | 📝 Ready | Medium | Task 1.1 |
+| 2.1 | [Games Module](TASK_2.1_Games_Module.md) | ✅ Complete | Medium | Task 1.1 |
 | 2.2 | Scientific Calc | 📋 Pending | Medium | Task 1.3 |
 | 2.3 | Settings | 📋 Pending | Low | Task 1.2 |
 | 2.4 | SD Card | 📋 Pending | Low | Task 1.2 |
@@ -153,10 +153,10 @@ Required sections:
 - Low: 6 tasks
 
 **By Status:**
-- Ready: 2 tasks (1.1, 2.1)
-- Pending: 18 tasks
+- Ready: 0 tasks
+- Pending: 14 tasks
 - In Progress: 0 tasks
-- Complete: 0 tasks
+- Complete: 6 tasks (1.1, 1.2, 1.3, 1.4, 1.5, 2.1)
 - Blocked: 0 tasks
 
 ## Project Metrics

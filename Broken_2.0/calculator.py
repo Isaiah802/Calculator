@@ -33,8 +33,7 @@ from ui import UIManager
 
 # Import game modules (ensure they exist)
 try:
-    from snake import play_snake
-    from pong import play_pong
+    from games import play_snake, play_pong
     GAMES_AVAILABLE = True
 except ImportError:
     GAMES_AVAILABLE = False
@@ -872,9 +871,48 @@ class CalculatorApp:
         """Simple game menu"""
         if not GAMES_AVAILABLE:
             return
+        
+        # Show game selection menu
+        games = ["Snake", "Pong", "Back"]
+        selected_index = 0
+        
+        while True:
+            # Draw menu
+            self.display.clear()
+            self.display.draw_text(80, 10, "Games Menu", 0xFFFF)
             
-        # This would be expanded with proper game integration
-        logger.info("Games feature - implementation pending")
+            for i, game in enumerate(games):
+                y_pos = 50 + i * 30
+                color = 0x07FF if i == selected_index else 0xFFFF
+                marker = "> " if i == selected_index else "  "
+                self.display.draw_text(60, y_pos, marker + game, color)
+            
+            self.display.show(force=True)
+            
+            # Get input
+            events = self.keypad.get_events()
+            for key, event_type in events:
+                if event_type == 'tap':
+                    label = self.keypad.get_key_label(key, False)
+                    
+                    # Navigation
+                    if label == '2':  # Up
+                        selected_index = (selected_index - 1) % len(games)
+                    elif label == '8':  # Down
+                        selected_index = (selected_index + 1) % len(games)
+                    elif label == '=' or label == '5':  # Select
+                        if selected_index == 0:  # Snake
+                            logger.info("Starting Snake game")
+                            play_snake(self.display, self.keypad)
+                        elif selected_index == 1:  # Pong
+                            logger.info("Starting Pong game")
+                            play_pong(self.display, self.keypad)
+                        elif selected_index == 2:  # Back
+                            return
+                    elif label == 'C' or label == 'ON':  # Exit
+                        return
+            
+            time.sleep_ms(10)
         
     def draw_calculator_screen(self):
         """Draw calculator mode screen"""
