@@ -39,13 +39,15 @@ Calculator/
 This repository includes comprehensive documentation to break down the calculator project into smaller, manageable tasks that can be assigned to multiple AI agents.
 
 ### 🚀 Quick Start
-- **NEW?** Start here → [Getting Started Guide](GETTING_STARTED.md)
+- **NEW AGENT?** Start here → **[NEXT_STEPS.md](NEXT_STEPS.md)** (Immediate next task with detailed guide)
+- **GETTING STARTED?** See → [Getting Started Guide](GETTING_STARTED.md)
 - **OVERVIEW?** See → [Project Summary](PROJECT_SUMMARY.md) (Visual overview with diagrams)
 - **MANAGING?** See → [Task Breakdown](TASK_BREAKDOWN.md) (All 20 tasks detailed)
 - **CODING?** See → [AI Agent Guide](AI_AGENT_GUIDE.md) (Quick reference & patterns)
 - **WORKFLOW?** See → [Workflow Guide](WORKFLOW_GUIDE.md) (User requirements & testing)
 
 ### 📋 Main Documentation
+- **[NEXT_STEPS.md](NEXT_STEPS.md)** - **⭐ START HERE** for next AI agent - Detailed guide for immediate next task
 - **[GETTING_STARTED.md](GETTING_STARTED.md)** - Step-by-step guide for managers, agents, and reviewers
 - **[PROJECT_SUMMARY.md](PROJECT_SUMMARY.md)** - Visual summary with diagrams and metrics
 - **[TASK_BREAKDOWN.md](TASK_BREAKDOWN.md)** - Complete breakdown of 20 tasks across 5 categories
