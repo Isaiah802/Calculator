@@ -1,7 +1,13 @@
-"""Settings mode placeholder.
+"""
+Settings Management Module
 
-Place user settings, persistence, and a small settings UI here.
-Keep settings code lightweight; avoid large imports at module import time.
+This module provides settings management functionality including:
+- User preference storage and retrieval
+- Calculator settings persistence to SD card
+- Default settings management
+- Settings validation
 """
 
-__all__ = []
+from .settings_manager import SettingsManager, create_settings_manager
+
+__all__ = ['SettingsManager', 'create_settings_manager']
