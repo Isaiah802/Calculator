@@ -1,7 +1,14 @@
-"""Games mode placeholder.
+"""
+Games Module
 
-Add small game implementations and assets here. Keep them optional to
-avoid increasing boot size of default firmware.
+Provides entertainment features for the calculator.
+
+Games:
+- Snake: Classic snake game
+- Pong: Single player pong vs AI
 """
 
-__all__ = []
+from .snake import play_snake
+from .pong import play_pong
+
+__all__ = ['play_snake', 'play_pong']
