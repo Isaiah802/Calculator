@@ -13,6 +13,7 @@
 - **Calculator.py reduced:** 2,395 → 1,291 lines (46% reduction)
 - **Modules created:** core, hardware, mathengine, storage, ui, games
 - **Next task:** Task 2.2 Scientific Calculator Module
+- **New:** NEXT_STEPS.md created with detailed guide for next agent
 
 ### Testing & Deployment Workflow
 ⚠️ **CRITICAL**: This calculator runs on **Raspberry Pi Pico 2W hardware**
@@ -32,6 +33,7 @@
 ## Quick Start Checklist
 
 When assigned a task:
+- [ ] **START HERE:** Read NEXT_STEPS.md for immediate next task with detailed guide
 - [ ] Read the task description in TASK_BREAKDOWN.md
 - [ ] Review TASK_COMPLETION_SUMMARY.md for current status
 - [ ] Review ARCHITECTURE.md for context
