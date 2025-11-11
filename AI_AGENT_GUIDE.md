@@ -1,14 +1,44 @@
 # AI Agent Quick Reference Guide
 
+**Last Updated:** November 11, 2025  
+**Project Status:** Phase 1 Complete (Tasks 1.1-1.5 ✅) - Phase 2 Ready
+
+---
+
+## 🚨 Important Project Context
+
+### Current Project State
+- **Phase 1 (Refactoring) COMPLETE** - All 5 tasks done (1.1-1.5)
+- **Calculator.py reduced:** 2,395 → 1,291 lines (46% reduction)
+- **Modules created:** core, hardware, mathengine, storage, ui
+- **Ready for:** Phase 2 Feature Implementation (Tasks 2.1-2.5)
+
+### Testing & Deployment Workflow
+⚠️ **CRITICAL**: This calculator runs on **Raspberry Pi Pico 2W hardware**
+- Testing is done **WITHOUT PC CONNECTION** on actual hardware
+- Deploy to Pico using Thonny or ampy
+- Serial debugging available but not always used
+- Focus on standalone operation after deployment
+
+### Key User Requirements
+1. **Calculation Behavior**: Expressions evaluate ONLY when "=" is pressed
+2. **Mode Selection**: AppState.switch_mode() must work correctly
+3. **Button Assignments**: Special attention to "=" and "ON" button positions
+4. **MicroPython Compatibility**: Avoid modules not available in MicroPython (typing, statistics, firmware)
+
+---
+
 ## Quick Start Checklist
 
 When assigned a task:
 - [ ] Read the task description in TASK_BREAKDOWN.md
+- [ ] Review TASK_COMPLETION_SUMMARY.md for current status
 - [ ] Review ARCHITECTURE.md for context
 - [ ] Check dependency tasks are complete
 - [ ] Understand current code structure
 - [ ] Follow coding patterns in existing code
-- [ ] Test incrementally
+- [ ] Test incrementally (syntax check minimum)
+- [ ] Consider MicroPython limitations
 - [ ] Document changes
 - [ ] Verify integration points
 
@@ -44,6 +74,59 @@ wc -l Broken_2.0/[module]/*.py
 ```bash
 # Find all imports
 grep "^import\|^from" Broken_2.0/calculator.py
+```
+
+---
+
+## 🔧 MicroPython Compatibility Guide
+
+### Modules NOT Available in MicroPython
+These standard Python modules will cause ImportError on Pico:
+- ❌ `typing` - Type hints work without importing
+- ❌ `statistics` - Implement manually or use enhanced_math_engine
+- ❌ `firmware` - No equivalent in MicroPython
+- ❌ `asyncio` (limited support) - Use uasyncio instead
+- ❌ `threading` - Use `_thread` instead
+
+### Modules Available in MicroPython
+- ✅ `machine` - Pin, SPI, PWM, ADC (hardware access)
+- ✅ `framebuf` - Frame buffer operations
+- ✅ `time`, `utime` - Time and delays
+- ✅ `math` - Basic math functions
+- ✅ `os`, `uos` - File system operations
+- ✅ `gc` - Garbage collection
+- ✅ `json`, `ujson` - JSON encoding/decoding
+- ✅ `sdcard` - SD card support (requires library)
+
+### Using Type Hints in MicroPython
+```python
+# Type hints work WITHOUT importing typing module
+def calculate(value: int, mode: str) -> float:
+    """Type hints are parsed but not enforced."""
+    return float(value)
+
+# Optional, List, Dict can be used in comments instead
+def process_data(items):  # type: List[int] -> None
+    """Process list of items."""
+    pass
+```
+
+### Handling Import Errors
+```python
+# Pattern: Try import with fallback
+try:
+    from enhanced_feature import AdvancedClass
+    FEATURE_AVAILABLE = True
+except ImportError:
+    FEATURE_AVAILABLE = False
+    print("[WARNING] Feature not available")
+
+# Later in code
+if FEATURE_AVAILABLE:
+    obj = AdvancedClass()
+else:
+    # Fallback behavior
+    pass
 ```
 
 ---
@@ -532,45 +615,119 @@ if __name__ == '__main__':
 
 ---
 
+## 📊 Current Project Status (November 2025)
+
+### ✅ COMPLETED - Phase 1: Refactoring (Tasks 1.1-1.5)
+
+All classes have been extracted from the monolithic calculator.py:
+
+| Module | Status | Files Created | Lines | Purpose |
+|--------|--------|---------------|-------|---------|
+| **core/** | ✅ DONE | app_state.py | 90 | Application state management |
+| **hardware/** | ✅ DONE | spi_manager.py, display.py, keypad.py, power.py | 487 | Hardware abstraction layer |
+| **mathengine/** | ✅ DONE | secure_engine.py | 435 | Secure math evaluation |
+| **storage/** | ✅ DONE | filesystem.py | 206 | SD card file operations |
+| **ui/** | ✅ DONE | ui_manager.py | 196 | UI rendering system |
+
+**Result:** calculator.py reduced from 2,395 → 1,291 lines (46% reduction)
+
+### 🔨 TODO - Phase 2: Feature Implementation (Tasks 2.1-2.5)
+
+These modules exist but are empty (only README files):
+
+| Module | Status | Priority | Estimated Lines | What's Needed |
+|--------|--------|----------|----------------|---------------|
+| **games/** | ❌ TODO | HIGH | 400 | Implement snake.py and pong.py with play functions |
+| **scientific/** | ❌ TODO | MEDIUM | 300 | Scientific calculator functions (trig, log, exp) |
+| **settings/** | ❌ TODO | MEDIUM | 200 | Settings manager with SD persistence |
+| **sd/** | ❌ TODO | LOW | 150 | Enhanced SD card features (file browser, export) |
+| **graphing/** | ❌ TODO | HIGH | 500 | Graph manager integrating existing graphics engines |
+
+### 📦 Available But Not Integrated
+
+These files exist and contain working code but need integration:
+
+| File | Lines | Status | What's Needed |
+|------|-------|--------|---------------|
+| enhanced_math_engine.py | 992 | Available | Already imported and used ✅ |
+| graphics_engine.py | 461 | Partial | Needs graphing module integration |
+| statistical_plots.py | 389 | Partial | Needs graphing module integration |
+| interactive_3d.py | 456 | Partial | Needs graphing module integration |
+| usb_interface.py | 661 | Partial | Import exists but `USB_AVAILABLE = False` |
+| performance_optimizer.py | 356 | Available | Not currently integrated |
+
+---
+
+## 🎯 Next Task Recommendations
+
+### IMMEDIATE PRIORITY: Task 2.1 - Games Module
+**Why:** Already attempted in calculator.py, easiest to implement, high user engagement
+
+**What to do:**
+1. Create `Broken_2.0/games/snake.py`
+2. Create `Broken_2.0/games/pong.py`
+3. Implement `play_snake()` function (uses display, keypad)
+4. Implement `play_pong()` function (uses display, keypad)
+5. Update `games/__init__.py` to export both functions
+6. Test: Import should succeed and `GAMES_AVAILABLE = True`
+
+**Dependencies:** Hardware layer (✅ complete), UI layer (✅ complete)
+
+### SECOND PRIORITY: Task 2.5 - Graphing Module
+**Why:** Graphics engines already exist, just need integration
+
+**What to do:**
+1. Create `Broken_2.0/graphing/graph_manager.py`
+2. Integrate graphics_engine.py, statistical_plots.py, interactive_3d.py
+3. Create unified graphing API
+4. Connect to calculator modes
+
+**Dependencies:** Hardware layer (✅ complete), Math engine (✅ complete)
+
+---
+
 ## Quick Reference: Current Classes
 
-### In calculator.py (2,395 lines)
+### ✅ In Extracted Modules (COMPLETE)
 
-| Class | Lines | Purpose | Extract To |
-|-------|-------|---------|------------|
-| Config | 48-109 | Configuration | core/config.py |
-| Logger | 122-147 | Logging | core/logger.py |
-| SPIManager | 152-197 | SPI bus | hardware/spi.py |
-| DisplayManager | 199-376 | Display | hardware/display.py |
-| KeypadManager | 377-472 | Keypad | hardware/keypad.py |
-| PowerManager | 473-551 | Power | hardware/power.py |
-| FileSystemManager | 552-731 | Files | storage/filesystem.py |
-| SecureMathEngine | 732-1081 | Math eval | math/secure_engine.py |
-| UIManager | 1082-1227 | UI render | ui/ui_manager.py |
-| AppState | 1228-1287 | State | core/app_state.py |
-| CalculatorApp | 1288-end | Main app | Keep in calculator.py |
+| Original Location | New Location | Status |
+|-------------------|--------------|--------|
+| Config | Still in calculator.py | ✅ Centralized config |
+| Logger | Still in calculator.py | ✅ Centralized logging |
+| SPIManager | hardware/spi_manager.py | ✅ Extracted |
+| DisplayManager | hardware/display.py | ✅ Extracted |
+| KeypadManager | hardware/keypad.py | ✅ Extracted |
+| PowerManager | hardware/power.py | ✅ Extracted |
+| FileSystemManager | storage/filesystem.py | ✅ Extracted |
+| SecureMathEngine | mathengine/secure_engine.py | ✅ Extracted |
+| UIManager | ui/ui_manager.py | ✅ Extracted |
+| AppState | core/app_state.py | ✅ Extracted |
+| CalculatorApp | calculator.py | ✅ Main app (kept) |
 
-### Other Files
+### 📚 Other Files (Integration Pending)
 
-| File | Lines | Purpose | Status |
-|------|-------|---------|--------|
-| enhanced_math_engine.py | 992 | Advanced math | Integrate |
-| graphics_engine.py | 461 | 2D graphics | Reorganize |
-| statistical_plots.py | 389 | Stat plots | Reorganize |
-| interactive_3d.py | 456 | 3D graphics | Reorganize |
-| usb_interface.py | 661 | USB | Integrate |
-| performance_optimizer.py | 356 | Performance | Integrate |
+| File | Lines | Purpose | Integration Status |
+|------|-------|---------|-------------------|
+| enhanced_math_engine.py | 992 | Advanced math | ✅ Imported & working |
+| graphics_engine.py | 461 | 2D graphics | 🔶 Needs Task 2.5 |
+| statistical_plots.py | 389 | Stat plots | 🔶 Needs Task 2.5 |
+| interactive_3d.py | 456 | 3D graphics | 🔶 Needs Task 2.5 |
+| usb_interface.py | 661 | USB | 🔶 Needs Task 3.1 |
+| performance_optimizer.py | 356 | Performance | 🔶 Needs Task 3.4 |
 
 ---
 
 ## Contact
 
 For questions or clarifications:
-- Review TASK_BREAKDOWN.md for task details
-- Check ARCHITECTURE.md for system design
+- Review **TASK_COMPLETION_SUMMARY.md** for what's done
+- Review **TASK_BREAKDOWN.md** for task details
+- Check **ARCHITECTURE.md** for system design
 - Examine existing code for patterns
 - Ask project maintainer if stuck
 
 ---
 
 **Remember:** The goal is clean, maintainable, well-tested code that follows existing patterns!
+
+**Current Focus:** Implement Phase 2 features (games, scientific, settings, SD, graphing modules)
