@@ -33,7 +33,8 @@
 ## Quick Start Checklist
 
 When assigned a task:
-- [ ] **START HERE:** Read NEXT_STEPS.md for immediate next task with detailed guide
+- [ ] **START HERE:** Read INSTRUCTIONS_FOR_NEXT_DEVELOPER.md for clear next steps ⭐
+- [ ] Read NEXT_STEPS.md for immediate next task with detailed guide
 - [ ] Read the task description in TASK_BREAKDOWN.md
 - [ ] Review TASK_COMPLETION_SUMMARY.md for current status
 - [ ] Review ARCHITECTURE.md for context
