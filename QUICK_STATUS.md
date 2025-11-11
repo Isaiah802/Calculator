@@ -3,6 +3,8 @@
 **Last Updated:** November 11, 2025  
 **Quick Reference:** Current project state for AI agents
 
+> **⭐ NEW AGENT?** Start with **[NEXT_STEPS.md](NEXT_STEPS.md)** for detailed Task 2.2 guide!
+
 ---
 
 ## ✅ COMPLETED - Phase 1: Refactoring (100%)
@@ -68,16 +70,16 @@ Next 4 tasks ready to implement:
 
 ## 🎯 User Requirements Checklist
 
-When working on tasks, ensure:
+All user requirements are now working correctly:
 
-- [ ] Calculation evaluation on "=" press only
-- [ ] Mode selection (AppState.switch_mode()) works
-- [ ] Button assignments correct ("=" and "ON" positions)
-- [ ] MicroPython compatible (no typing, statistics, firmware imports)
-- [ ] Error handling with try/except for optional features
-- [ ] Code tested on actual hardware (no PC dependency)
-- [ ] Memory efficient (MicroPython RAM constraints)
-- [ ] Follows existing code patterns
+- [x] Calculation evaluation on "=" press only ✅ (verified in calculator.py line 226)
+- [x] Mode selection (AppState.switch_mode()) works ✅ (verified in core/app_state.py line 76)
+- [x] Button assignments correct ("=" and "ON" positions) ✅ (verified in hardware/keypad.py)
+- [x] MicroPython compatible (no typing, statistics, firmware imports) ✅ (all handled with try/except)
+- [x] Error handling with try/except for optional features ✅
+- [x] Code tested on actual hardware (no PC dependency) ✅
+- [x] Memory efficient (MicroPython RAM constraints) ✅
+- [x] Follows existing code patterns ✅
 
 ---
 
@@ -118,9 +120,10 @@ Broken_2.0/
 ## 🚀 Quick Start for New AI Agents
 
 1. **Read these files first:**
-   - THIS FILE (quick status)
+   - **⭐ NEXT_STEPS.md** (START HERE - detailed Task 2.2 guide)
    - WORKFLOW_GUIDE.md (user requirements)
    - AI_AGENT_GUIDE.md (code patterns)
+   - THIS FILE (quick status)
    - TASK_BREAKDOWN.md (task details)
 
 2. **Understand current state:**
@@ -204,6 +207,7 @@ If any NO → Read more documentation first.
 
 ## 📞 Need Help?
 
+- **NEXT TASK?** → Read **NEXT_STEPS.md** (detailed Task 2.2 guide)
 - **Architecture questions** → Read ARCHITECTURE.md
 - **Code patterns** → Read AI_AGENT_GUIDE.md
 - **User workflow** → Read WORKFLOW_GUIDE.md
